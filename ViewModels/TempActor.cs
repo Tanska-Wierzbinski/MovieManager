@@ -27,6 +27,7 @@ namespace MovieManager.Models
 
         public string Name { get; set; }
        
+        [DisplayName("Last name")]
         public string LastName { get; set; }
         
         public Gender Gender { get; set; }
@@ -43,6 +44,7 @@ namespace MovieManager.Models
 
         public List<string> Countries { get; set; }
 
+        [DisplayName("Picture")]
         public Image Image { get; set; }
     }
 }

@@ -34,15 +34,16 @@
         <span asp-validation-for="DeathDate" class="text-danger"></span>
     </div>
     <div class="custom-file">
+        <label asp-for="Image" class="control-label"></label>
         <label for="filename" class="btn btn-outline-dark">Choose file</label>
-        <label class="labl"></label>
+        <label class="label_file"></label>
         <input type="file" id="filename" asp-for="Image.ImageFile" accept="image/*" style="opacity:0" class="custom-file-input">
     </div>
 
     <script>
                 $(".custom-file-input").on("change", function () {
                     var fileName = $(this).val().split("\\").pop();
-                    $(this).siblings(".labl").addClass("selected").html(fileName);
+                    $(this).siblings(".label_file").addClass("selected").html(fileName);
                 });
     </script>
 }

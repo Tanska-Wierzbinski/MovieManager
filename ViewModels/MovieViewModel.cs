@@ -23,10 +23,12 @@ namespace MovieManager.ViewModels
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ReleaseDate { get; set; }
 
+        [DisplayName("Poster")]
         public Image Image { get; set; }
 
         public int[] ActorIds { get; set; }
 
+        [DisplayName("Cast")]
         public List<SelectListItem> Actors { get; set; }
 
         public int[] CategoryIds { get; set; }

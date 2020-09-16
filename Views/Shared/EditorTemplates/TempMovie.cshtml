@@ -30,10 +30,7 @@
 
 
     <div class="form-group" id="addCategory">
-        <h6>Kategorie</h6>
+        <label asp-for="Categories"></label>
         <select multiple="multiple" class="form-control" id="CategoryIds" asp-for="CategoryIds" asp-items="Model.Categories"></select>
     </div>
-
-
-
 }
