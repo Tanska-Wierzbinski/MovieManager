@@ -1,5 +1,6 @@
 # MovieManager
 
+This is our first project where we learned the basics of developing an application in ASP .NET Core.
 This app is modeled on a popular website about movies and actors. 
 Home page displays upcoming premieres and top rated movies. 
 The "Movies" tab displays the movie database. In this tab, the user can sort, filter movies and choose the number of movies displayed on the site. When any movie is selected, the movie details will be displayed. Logged in user can add and edit his reviews for the movie or rate the cast. 
