@@ -1,0 +1,167 @@
+﻿@model IEnumerable<MovieManager.Models.Movie>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+
+
+@{
+    ViewData["Title"] = "Lista z kategorii";
+
+}
+
+<h1>Movies in @ViewBag.category</h1>
+
+@if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+{
+    <p>
+        <a asp-action="Create" asp-controller="Movie" asp-route-idcategory="@ViewBag.id">Create New</a>
+    </p>
+}
+
+
+@foreach (var item in Model)
+{
+    <hr />
+    <div class="row">
+        <div class="col-auto">
+            @if (item.ImageName != null)
+            {
+                <a asp-action="Details" asp-controller="Movie" asp-route-id="@item.MovieId" style="color:black"><img class="zoom" src="@("~/Image/" + item.ImageName)" asp-append-version="true" style="width:175px; height:auto" /></a>
+  
+            }
+        </div>
+        <div class="col-auto">
+            <h4><a asp-action="Details" asp-controller="Movie" asp-route-id="@item.MovieId" style="color:black">@item.Name</a></h4>
+            <h6>@item.ReleaseDate.Year</h6>
+            <h4>
+                @{
+                    if (item.Reviews.Any() != false)
+                    {
+                        <div class="row">
+                            <div class="col-auto">
+                                @{
+                                    var avg = Math.Round(item.Reviews.Average(m => m.Grade), 1);
+                                    if (avg < 5)
+                                    {
+                                        <i class="far fa-star"></i>
+                                    }
+                                    else if (avg < 7)
+                                    {
+                                        <i class="fas fa-star-half-alt"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-star"></i>
+                                    }
+                                    @Html.DisplayFor(modelItem => avg)
+                                }
+                            </div>
+                            <div class="col-auto">
+                                @{var rev = item.Reviews.Count() > 1 ? "reviews" : "review"; }  
+                                <h6><i style="color:dimgray">based on @Html.DisplayFor(model => item.Reviews.Count) @rev</i></h6>
+                            </div>
+                        </div>
+                    }
+                }
+            </h4>
+            <div class="row">
+                <div class="col-auto">
+                    <h6><text style="color:dimgray">Category </text></h6>
+                    <h6><text style="color:dimgray">Director</text></h6>
+                </div>
+
+                <div class="col-auto">
+                    <h6>
+                        @if (item.MovieCategories.Any() != false)
+                        {
+                            @foreach (var cat in item.MovieCategories)
+                            {
+                                <a asp-action="ListOfCategory" asp-controller="Movie" asp-route-id="@cat.CategoryId" style="color:black">@cat.Category.Name</a>
+                            }
+                        }
+                    </h6>
+                    <k6>@item.Director</k6>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg">
+
+        </div>
+        @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+        {
+            <div class="col-auto">
+                <a asp-action="Edit" asp-controller="Movie" asp-route-id="@item.MovieId" class="btn btn-outline-dark w-100">Edit</a>
+                <p></p>
+                <a asp-action="Delete" asp-controller="Movie" asp-route-id="@item.MovieId" class="btn btn-outline-dark w-100">Delete</a>
+            </div>
+        }
+    </div>
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Director)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReleaseDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Director)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReleaseDate)
+                </td>
+                <td>
+                    <a class="btn btn-dark" asp-action="Details" asp-route-id="@item.MovieId">Details</a>
+                    @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+                    {
+                        <a class="btn btn-outline-dark" asp-action="Edit" asp-route-id="@item.MovieId">Edit</a>
+                        <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.MovieId">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <a asp-action="Index">Wróć do listy filmów</a>
+</div>*@

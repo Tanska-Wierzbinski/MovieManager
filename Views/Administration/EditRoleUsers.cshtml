@@ -1,0 +1,23 @@
+﻿@model List<MovieManager.ViewModels.UserRoleVM>
+
+@{
+    ViewData["Title"] = "EditRoleUsers";
+    var roleId = ViewBag.roleId;
+}
+
+<h1>Edit users in role</h1>
+
+<form method="post">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <div class="form-check m-1">
+            <input asp-for="@Model[i].IsSelected" class="form-check-input" />
+            <label class="form-check-label" asp-for="@Model[i].IsSelected">@Model[i].UserName</label>
+            <input type="hidden" asp-for="@Model[i].UserId" />
+            <input type="hidden" asp-for="@Model[i].UserName" />
+        </div>
+    }
+    <div class="form-group mt-3">
+        <input type="submit" value="Save" class="btn btn-outline-primary" /> <a class="btn btn-outline-dark" asp-controller="Administration" asp-action="EditRole" asp-route-id="@roleId">Back to List</a>
+    </div>
+</form>

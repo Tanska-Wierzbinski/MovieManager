@@ -1,0 +1,44 @@
+﻿@model MovieManager.ViewModels.EditRoleVM
+
+@{
+    ViewData["Title"] = "Edit role";
+}
+
+<h1>Editing role</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditRole" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <h4>List of users in this role:</h4>
+            @if (Model.Users.Any())
+            {
+                <ul>
+                    @foreach (var user in Model.Users)
+                    {
+                        <li>
+                            <h5>@user</h5>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <h5>There's no users in this role yet.</h5>
+            }
+            <a class="btn btn-primary" asp-controller="Administration" asp-action="EditRoleUsers" asp-route-roleId="@Model.Id">Add or remove users</a>
+            <hr />
+            <div class="form-group mt-3">
+                <input type="submit" value="Save" class="btn btn-outline-primary" /> <a class="btn btn-outline-dark" asp-action="ListOfRoles">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>

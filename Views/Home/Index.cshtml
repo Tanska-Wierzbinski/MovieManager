@@ -1,0 +1,51 @@
+﻿@model MovieManager.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4">Movie Manager</h1>
+        <p class="lead">Authors: Kinga Tańska, Eryk Wierzbiński</p>
+    </div>
+</div>
+
+<h2>Top 3 movies</h2>
+<div class="card-columns">
+    @foreach (var item in Model.TopMovies)
+    {
+        <div class="card" style="width: 15rem;">
+            @if (item.ImageName != null)
+            {
+                <img src="@("~/Image/" + item.ImageName)" asp-append-version="true" class="card-img-top" alt="...">
+            }
+            <div class="card-body">
+                <h5 class="card-title">@item.Name (@item.ReleaseDate.Year)</h5>
+                <p class="card-text">Director: @item.Director</p>
+                <p class="card-text"><i>,,@item.Reviews.OrderByDescending(m => m.Grade).Take(1).Single().Description''</i></p>
+                <a class="btn btn-warning" asp-action="Details" asp-controller="Movie" asp-route-id="@item.MovieId">Go to</a>
+            </div>
+        </div>
+    }
+</div>
+
+<p style="height: 15px"></p>
+
+<h2>Coming soon</h2>
+<div class="card-columns">
+    @foreach (var item in Model.NewMovies)
+    {
+        <div class="card" style="width: 15rem;">
+            @if (item.ImageName != null)
+            {
+                <img src="@("~/Image/" + item.ImageName)" asp-append-version="true" class="card-img-top" alt="...">
+            }
+            <div class="card-body">
+                <h5 class="card-title">@item.Name</h5>
+                @Html.DisplayFor(m=>item.ReleaseDate)
+                <p class="card-text">Director: @item.Director</p>
+                <a class="btn btn-warning" asp-action="Details" asp-controller="Movie" asp-route-id="@item.MovieId">Go to</a>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,287 @@
+﻿@model MovieManager.ViewModels.MovieIndexViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+
+@{
+    ViewData["Title"] = "Filmy";
+}
+
+<link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+
+<h1>Movies</h1>
+
+@if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+{
+    <p>
+        <a asp-action="Create" style="color:black">Add new movie</a>
+    </p>
+}
+
+
+    <div class="p-3 mb-2 bg-dark rounded">
+        <h5 style="color:white">Filter</h5>
+
+        <button type="button" class="btn btn-warning mr-2" style="width:20%" data-toggle="modal" data-target="#RatingModal">
+            Rating
+        </button>
+        <div class="modal fade" id="RatingModal" tabindex="-1" role="dialog" aria-labelledby="RatingModalLabel" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-scrollable" role="document" style="width:auto">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark">
+                        <h5 class="modal-title text-white" id="RatingModalLabel">Select the range of ratings</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="min-height:100px; position:relative;">
+                        <div class="row" style="position:absolute;top:47%;margin:0;margin-left:-1.2%">
+                            <div class="btn-group-toggle" data-toggle="buttons" id="gradeBtns">
+                                @for (var i = 1; i <= 10; i++)
+                                {
+                                    <button value="@i" type="button" class="filterBtn btn btn-outline-warning" data-toggle="button" data-tooltip="tooltip" title="@i" aria-pressed="false" autocomplete="off">
+                                        <i class="far fa-star " aria-hidden="true"></i>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="gradeModal">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Save</button>
+                        <button type="button" class="clearModalBtn btn btn-dark">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-warning mr-2" style="width:20%" data-toggle="modal" data-target="#YearModal">
+            Year of production
+        </button>
+        <div class="modal fade" id="YearModal" tabindex="-1" role="dialog" aria-labelledby="YearModalLabel" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-scrollable" role="document" style="width:auto">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark">
+                        <h5 class="modal-title text-white" id="YearModalLabel">Select the range of years of production</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="min-height:100px; max-height:200px; position:relative;">
+                        <div class="btn-group-toggle" data-toggle="buttons" id="yearBtns">
+                            @for (var i = 2030; i >= 1920; i--)
+                            {
+                                <button value="@i" type="button" class="filterBtn btn btn-outline-warning" data-toggle="button" data-tooltip="tooltip" title="@i" aria-pressed="false" autocomplete="off">
+                                    @i
+                                </button>
+                            }
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="yearModal">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Save</button>
+                        <button type="button" class="clearModalBtn btn btn-dark">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+  
+        <button type="button" class="btn btn-warning mr-2" style="width:20%" data-toggle="modal" data-target="#CategoryModal">
+            Category
+        </button>
+        <div class="modal fade" id="CategoryModal" tabindex="-1" role="dialog" aria-labelledby="CategoryModalLabel" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-scrollable" role="document" style="width:auto">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark">
+                        <h5 class="modal-title text-white" id="CategoryModalLabel">Select categories</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="min-height:100px; position:relative;">
+                        <div id="catBtns">
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <button value="@cat.CategoryId" type="button" class="filterBtn btn btn-outline-warning" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                    @cat.Name
+                                </button>
+                            }
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="categoryModal">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Save</button>
+                        <button type="button" class="clearModalBtn btn btn-dark">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="filter" type="button" class="btn btn-warning " style="width:20%; float:right">
+            <i class="fas fa-filter"></i> <text class="font-weight-bold">Filter</text>
+        </button>
+    </div>
+
+    <div class="dropdown">
+        <button class="btn btn-dark dropdown-toggle" type="button" id="sort_dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            sort by
+        </button>
+        <div class="dropdown-menu">
+            <div class="row">
+                <div class="col-sm">
+                    <a class="dropdown-item-text" style="color:dimgray">name</a>
+                </div>
+                <div class="col-auto">
+                    <button class="dropdown-item" value="">ascending</button>
+                    <button class="dropdown-item" value="nameDesc">descending</button>
+                </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="row">
+                <div class="col-sm">
+                    <a class="dropdown-item-text" style="color:dimgray">release date</a>
+                </div>
+                <div class="col-auto">
+                    <button class="dropdown-item" value="year">ascending</button>
+                    <button class="dropdown-item" value="yearDesc">descending</button>
+                </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="row">
+                <div class="col-sm">
+                    <a class="dropdown-item-text" style="color:dimgray">rating</a>
+                </div>
+                <div class="col-auto">
+                    <button class="dropdown-item" value="grade">ascending</button>
+                    <button class="dropdown-item" value="gradeDesc">descending</button>
+                </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="row">
+                <div class="col-sm">
+                    <a class="dropdown-item-text" style="color:dimgray">number of ratings</a>
+                </div>
+                <div class="col-auto">
+                    <button class="dropdown-item" value="quantityGrade">ascending</button>
+                    <button class="dropdown-item" value="quantityGradeDesc">descending</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p></p>
+
+    <div class="dropdown">
+        <button class="btn btn-dark dropdown-toggle" style="width:20%" type="button" id="show_dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            showing on page
+        </button>
+        <div class="dropdown-menu" id="pageSize">
+            <button class="dropdown-item" value="5">5</button>
+            <button class="dropdown-item" value="10">10</button>
+            <button class="dropdown-item" value="15">15</button>
+        </div>
+    </div>
+    <p></p>
+
+    @foreach (var item in Model.PaginatedMovies)
+    {
+        <hr />
+        <div class="row">
+            <div class="col-auto">
+                @if (item.ImageName != null)
+                {
+                    <a asp-action="Details" asp-controller="Movie" asp-route-id="@item.MovieId" style="color:black"><img class="zoom" src="@("~/Image/" + item.ImageName)" asp-append-version="true" style="width:175px; height:auto" /></a>
+                }
+            </div>
+            <div class="col-auto">
+                <h4><a asp-action="Details" asp-controller="Movie" asp-route-id="@item.MovieId" style="color:black">@item.Name</a></h4>
+                <h6>@item.ReleaseDate.Year</h6>
+                <h4>
+                    @{
+                        if (item.Reviews.Any() != false)
+                        {
+                            <div class="row">
+                                <div class="col-auto">
+                                    @{
+                                        var avg = Math.Round(item.Reviews.Average(m => m.Grade), 1);
+                                        if (avg < 5)
+                                        {
+                                            <i class="far fa-star"></i>
+                                        }
+                                        else if (avg < 7)
+                                        {
+                                            <i class="fas fa-star-half-alt"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-star"></i>
+                                        }
+                                        @Html.DisplayFor(modelItem => avg)
+                                    }
+                                </div>
+                                <div class="col-auto">
+                                    @{var rev = item.Reviews.Count() > 1 ? "reviews" : "review"; }
+                                    <h6><i style="color:dimgray">based on @Html.DisplayFor(model => item.Reviews.Count) @rev</i></h6>
+                                </div>
+                            </div>
+                        }
+                    }
+                </h4>
+                <div class="row">
+                    <div class="col-auto">
+                        <h6><text style="color:dimgray">Category </text></h6>
+                        <h6><text style="color:dimgray">Director</text></h6>
+                    </div>
+                    <div class="col-auto">
+                        <h6>
+                            @if (item.MovieCategories.Any() != false)
+                            {
+                                @foreach (var cat in item.MovieCategories)
+                                {
+                                    <a asp-action="ListOfCategory" asp-controller="Movie" asp-route-id="@cat.CategoryId" style="color:black">@cat.Category.Name</a>
+                                }
+                            }
+                        </h6>
+                        <k6>@item.Director</k6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg">
+
+            </div>
+            @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+            {
+                <div class="col-auto">
+                    <a asp-action="Edit" asp-controller="Movie" asp-route-id="@item.MovieId" class="btn btn-outline-dark w-100">Edit</a>
+                    <p></p>
+                    <a asp-action="Delete" asp-controller="Movie" asp-route-id="@item.MovieId" class="btn btn-outline-dark w-100">Delete</a>
+                </div>
+            }
+        </div>
+    }
+
+    @{
+        var prevDisabled = !Model.PaginatedMovies.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.PaginatedMovies.HasNextPage ? "disabled" : "";
+        var next = @Model.PaginatedMovies.PageIndex + 1;
+        var previous = @Model.PaginatedMovies.PageIndex - 1;
+
+        <p></p>
+
+        <div id="pagination">
+            <button class="pagebtn btn btn-dark" @prevDisabled value="@previous" id="previous">
+                Previous
+            </button>
+            <button class="pagebtn btn btn-dark" @nextDisabled value="@next" id="next">
+                Next
+            </button>
+        </div>
+    }
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        <script type="text/javascript" src="~/js/Own/MovieIndex.js"></script>
+
+    }

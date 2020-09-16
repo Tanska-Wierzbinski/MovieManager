@@ -1,0 +1,89 @@
+﻿@model MovieManager.ViewModels.MovieViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Adding new movie</h1>
+
+<script src="~/lib/jquery/3.5.1/jquery.min.js"></script>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Director" class="control-label"></label>
+                <input asp-for="Director" class="form-control" />
+                <span asp-validation-for="Director" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReleaseDate" class="control-label"></label>
+                <input type="date" asp-for="ReleaseDate" class="form-control" />
+                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="dropDownListCategories">
+                <select multiple="multiple" class="form-control" id="CategoryIds" asp-for="CategoryIds" asp-items="Model.Categories"></select>
+            </div>
+            <div class="form-group" id="dropDownListActors">
+                <select multiple="multiple" class="form-control" id="ActorIds" asp-for="ActorIds" asp-items="Model.Actors"></select>
+            </div>
+
+            <div id="addNewActor">
+                @for (int i = 0; i < Model.TempActors.Count(); i++)
+                {
+                    @Html.EditorFor(model => model.TempActors[i])
+                }
+            </div>
+
+            <div class="custom-file">
+                <label for="filename" class="btn btn-outline-dark">Choose file</label>
+                <label class="label_file"></label>
+                <input type="file" id="filename" asp-for="Image.ImageFile" accept="image/*" style="opacity:0" class="custom-file-input">
+            </div>
+
+            <script>
+                $(".custom-file-input").on("change", function () {
+                    var fileName = $(this).val().split("\\").pop();
+                    $(this).siblings(".label_file").addClass("selected").html(fileName);
+                });
+            </script>
+
+            <div>
+                <input class="btn btn-outline-dark" type="button" id="btnAdd" name="btnAdd" value="Add new actor" />
+            </div>
+
+            <p></p>
+            <hr />
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-warning" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-dark" asp-action="Index"><i class="fas fa-angle-left"></i> Back to list of movies</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $("#btnAdd").on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/Movie/AddNewActor',
+                success: function (partialView) {
+                    $('#addNewActor').append(partialView);
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,125 @@
+﻿@model MovieManager.ViewModels.MovieViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Editing movie</h1>
+
+<script src="~/lib/jquery/3.5.1/jquery.min.js"></script>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Director" class="control-label"></label>
+                <input asp-for="Director" class="form-control" />
+                <span asp-validation-for="Director" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReleaseDate" class="control-label"></label>
+                <input type="date" asp-for="ReleaseDate" class="form-control" />
+                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group" id="deleteImage">
+                <label asp-for="@Model.Image" class="control-label"></label>
+                @if (Model.Image.Name != null)
+                {
+                    <img src="@("~/Image/" + Model.Image.Name)" asp-append-version="true" style="width:350px; height:auto" />
+                    <p style="margin-bottom: 0.5cm"></p>
+                    <input type="button" class="btn btn-outline-dark" id="deleteImageBtn" value="Delete photo" />
+                }
+            </div>
+
+            <div class="form-group" id="addImage" style="display:none">
+                <div class="custom-file">
+                    <label for="filename" class="btn btn-outline-dark">Choose file</label>
+                    <label class="label_file"></label>
+                    <input type="file" id="filename" asp-for="Image.ImageFile" accept="image/*" style="opacity:0" class="custom-file-input">
+                </div>
+
+                <script>
+                    $(".custom-file-input").on("change", function () {
+                        var fileName = $(this).val().split("\\").pop();
+                        $(this).siblings(".label_file").addClass("selected").html(fileName);
+                    });
+                </script>
+            </div>
+
+            <h6>Categories</h6>
+            <div class="form-group" id="dropDownListCategories">
+                <select multiple="multiple" class="form-control" id="CategoryIds" asp-for="CategoryIds" asp-items="Model.Categories"></select>
+            </div>
+
+            <h6>Actors</h6>
+            <div class="form-group" id="dropDownListActors">
+                <select multiple="multiple" class="form-control" id="ActorIds" asp-for="ActorIds" asp-items="Model.Actors"></select>
+            </div>
+            <div id="addNewActor">
+                @for (int i = 0; i < Model.TempActors.Count(); i++)
+                {
+                    @Html.EditorFor(model => model.TempActors[i])
+                }
+            </div>
+
+            <div>
+                <input class="btn btn-outline-dark" type="button" id="btnAdd" name="btnAdd" value="Add new actor" />
+            </div>
+
+            <p></p>
+            <hr />
+
+            <div class="form-group">
+                <input type="submit" value="Save" id="save" class="btn btn-warning" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-dark" asp-action="Index"><i class="fas fa-angle-left"></i> Back to list of movies</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $("#btnAdd").on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/Movie/AddNewActor',
+                success: function (partialView) {
+                    $('#addNewActor').append(partialView);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $("#deleteImageBtn").on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/Movie/DeleteImage/@Model.Image.Name',
+                success: function () {
+                    $('#deleteImage').hide(),
+                    $('#addImage').show();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+    $("html").ready(function () {
+        if ('@Model.Image.Name' == '') {
+            $("#addImage").show();
+        }
+    });
+    </script>
+}

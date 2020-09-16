@@ -1,0 +1,39 @@
+﻿
+@using HtmlHelpers.BeginCollectionItemCore
+@model MovieManager.Models.TempMovie
+
+@using (Html.BeginCollectionItem("TempMovies"))
+{
+  
+    <hr />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="Director" class="control-label"></label>
+        <input asp-for="Director" class="form-control" />
+        <span asp-validation-for="Director" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="ReleaseDate" class="control-label"></label>
+        <input type="date" asp-for="ReleaseDate" class="form-control" />
+        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group" id="addCategory">
+        <h6>Kategorie</h6>
+        <select multiple="multiple" class="form-control" id="CategoryIds" asp-for="CategoryIds" asp-items="Model.Categories"></select>
+    </div>
+
+
+
+}

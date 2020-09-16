@@ -1,0 +1,140 @@
+﻿@model MovieManager.ViewModels.SearchIndexViewModel
+@{
+    ViewData["Title"] = "Searching";
+}
+
+<h1>Movies with the searched phrase: @ViewBag.searchString</h1>
+
+    @foreach (var item in Model.Movies)
+    {
+        <div class="row">
+            <div class="col-auto">
+                @if (item.ImageName != null)
+                {
+                    <a asp-action="Details" asp-controller="Movie" asp-route-id="@item.MovieId" style="color:black"><img class="zoom" src="@("~/Image/" + item.ImageName)" asp-append-version="true" style="width:175px; height:auto" /></a>
+                }
+            </div>
+            <div class="col-auto">
+                <h4><a asp-action="Details" asp-controller="Movie" asp-route-id="@item.MovieId" style="color:black">@item.Name</a></h4>
+                <h6>@item.ReleaseDate.Year</h6>
+                <h4>
+                    @{
+                        if (item.Reviews.Any() != false)
+                        {
+                            <div class="row">
+                                <div class="col-auto">
+                                    @{
+                                        var avg = Math.Round(item.Reviews.Average(m => m.Grade), 1);
+                                        if (avg < 5)
+                                        {
+                                            <i class="far fa-star"></i>
+                                        }
+                                        else if (avg < 7)
+                                        {
+                                            <i class="fas fa-star-half-alt"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-star"></i>
+                                        }
+                                        @Html.DisplayFor(modelItem => avg)
+                                    }
+                                </div>
+                                <div class="col-auto">
+                                    @{ 
+                                        var rev = item.Reviews.Count > 1 ? "reviews" : "review";
+                                    }
+                                    <h6><i style="color:dimgray">based on @Html.DisplayFor(model => item.Reviews.Count) @rev</i></h6>
+                                </div>
+                            </div>
+                        }
+                    }
+                </h4>
+                <div class="row">
+                    <div class="col-auto">
+                        <h6><text style="color:dimgray">categories </text></h6>
+                        <h6><text style="color:dimgray">director</text></h6>
+                    </div>
+                    <div class="col-auto">
+                        <h6>
+                            @if (item.MovieCategories.Any() != false)
+                            {
+                                @foreach (var cat in item.MovieCategories)
+                                {
+                                    <a asp-action="ListOfCategory" asp-controller="Movie" asp-route-id="@cat.CategoryId" style="color:black">@cat.Category.Name</a>
+                                }
+                            }
+                        </h6>
+                        <k6>@item.Director</k6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg">
+
+            </div>
+            <div class="col-auto">
+                <a asp-action="Edit" style="width:100%" asp-controller="Movie" asp-route-id="@item.MovieId" class="btn btn-outline-dark">Edit</a>
+                <p></p>
+                <a asp-action="Delete" style="width:100%"  asp-controller="Movie" asp-route-id="@item.MovieId" class="btn btn-outline-dark">Delete</a>
+            </div>
+        </div>
+        <hr />
+        <p></p>
+    }
+
+
+<h1>Actors with the searched phrase: @ViewBag.searchString</h1>
+
+
+@foreach (var item in Model.Actors)
+{
+    <hr />
+    <div class="row">
+        <div class="col-auto">
+            @if (item.ImageName != null)
+            {
+                <img src="@("~/Image/" + item.ImageName)" class="zoom" asp-append-version="true" style="width:100px; height:auto;" />
+            }
+        </div>
+        <div class="col-auto">
+            <h4><a asp-action="Details" asp-controller="Actor" asp-route-id="@item.ActorId" style="color:black">@item.Name @item.LastName</a></h4>
+            <h6 style="color:dimgray">
+                (@item.BornDate.Year - @if (item.DeathDate != null)
+                {@item.DeathDate.Value.Year;})
+            </h6>
+            <h4>
+                @{
+                    if (item.Grades.Any() != false)
+                    {
+                        var avg = Math.Round(item.Grades.Average(m => m.GradeValue), 1);
+                        if (avg < 5)
+                        {
+                            <i class="far fa-star"></i>
+                        }
+                        else if (avg < 7)
+                        {
+                            <i class="fas fa-star-half-alt"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-star"></i>
+                        }
+                        @Html.DisplayFor(modelItem => avg)
+                    }
+                }
+            </h4>
+        </div>
+        <div class="col-lg">
+
+        </div>
+        <div class="col-auto" style="float:right">
+            <a asp-action="Edit" asp-controller="Actor" asp-route-id="@item.ActorId" class="btn btn-outline-dark w-100">Edit</a>
+            <p></p>
+            <a asp-action="Delete" asp-controller="Actor" asp-route-id="@item.ActorId" class="btn btn-outline-dark w-100">Delete</a>
+        </div>
+    </div>
+
+}
+
+
+

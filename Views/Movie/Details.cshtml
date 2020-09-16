@@ -1,0 +1,193 @@
+﻿@model MovieManager.ViewModels.MovieDetailsViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@{
+    ViewData["Title"] = Model.Name;
+    string fullname = null;
+}
+
+<link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+
+<h1>@Model.Name</h1>
+
+<div>
+    <h4>
+        @{
+            if (Model.Reviews.Any() != false)
+            {
+                var avg = Math.Round(Model.Reviews.Average(m => m.Grade), 1);
+                if (avg < 5)
+                {
+                    <i class="far fa-star"></i>
+                }
+                else if (avg < 7)
+                {
+                    <i class="fas fa-star-half-alt"></i>
+                }
+                else
+                {
+                    <i class="fas fa-star"></i>
+                }
+                @Html.DisplayFor(modelItem => avg)
+            }
+        }
+    </h4>
+    <hr />
+
+    <div class="container">
+        <div class="row">
+            <div class="col-auto">
+                @if (Model.ImageName != null)
+                {
+                    <div class="col-auto">
+                        <img src="@("~/Image/" + Model.ImageName)" asp-append-version="true" style="width:175px; height:auto" />
+                    </div>
+                }
+            </div>
+            <div class="col-auto">
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Director)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Director)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.ReleaseDate)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.ReleaseDate)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.MovieCategories)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @foreach (var item in Model.MovieCategories)
+                        {
+                            <a asp-action="ListOfCategory" asp-controller="Movie" asp-route-id="@item.CategoryId" class="text-dark mr-2">@Html.DisplayFor(modelItem => item.Category.Name)</a>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <h2>@Html.DisplayNameFor(model => model.MovieActors)</h2>
+
+    <ul>
+        @foreach (var item in Model.MovieActors)
+        {
+            <li>
+                @{ fullname = item.Actor.Name + " " + item.Actor.LastName;
+                    @Html.DisplayFor(modelItem => fullname)
+
+                    var grades = item.Actor.Grades.Where(g => g.MovieId == item.MovieId);
+                    if (grades.Any())
+                    {
+                        var avg = Math.Round(grades.Average(g => g.GradeValue), 1);
+                        string avgstring = " (" + avg + ")";
+                        @Html.DisplayFor(modelItem => avgstring);
+                    }
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <button id="gradesBtn" class="@item.ActorId btn btn-outline-warning btn-sm" type="button" data-toggle="popover" title="Rate acting on:" data-trigger="focus">Rate</button>
+
+                        <div id="grades" class="@item.ActorId btn-toolbar" role="toolbar">
+                            <div class="btn-group btn-group-sm" role="group" style="display:none">
+                                @for (var i = 1; i <= 10; i++)
+                                {
+                                    <a class="btn btn-warning btn-sm" asp-action="AddGradeInMovie" asp-controller="Actor" asp-route-movieId="@item.MovieId" asp-route-actorId="@item.ActorId" asp-route-grade="@i">@i</a>
+                                }
+                            </div>
+                        </div>
+                     }
+                     <p></p>
+                }
+            </li>
+        }
+    </ul>
+
+    <h2>
+        @Html.DisplayNameFor(model => model.Reviews)
+        @if (signInManager.IsSignedIn(User))
+        {
+            <button id="addReview" type="button" class="btn btn-outline-dark" data-toggle="popover" style="border-radius:50%" data-html="true" data-popover-content="#review"><i class="fa fa-plus " aria-hidden="true"></i></button>
+        }
+    </h2>
+
+
+    <div id="review" style="display:none">
+        <div class="popover-body">
+            <form asp-action="Create" asp-controller="Review" asp-route-id="@Model.MovieId">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <label asp-for="Review.Grade" class="control-label"></label>
+                <select asp-for="Review.Grade" class="form-control input-md" asp-items="@Model.SelectListGrade"></select>
+                <span asp-validation-for="Review.Grade" class="text-danger"></span>
+
+                <label asp-for="Review.Description" class="control-label"></label>
+                <input asp-for="Review.Description" class="form-control" />
+                <span asp-validation-for="Review.Description" class="text-danger"></span>
+                <p></p>
+
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-warning" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-sm-10">
+        @foreach (var item in Model.Reviews)
+        {
+            <div style="margin-bottom:10px">
+                <p> <text style="color:gray">Author: </text>@Html.DisplayFor(modelItem => item.Author) </p>
+                <p> <text style="color:gray">Grade:</text> @Html.DisplayFor(modelItem => item.Grade) </p>
+                <p> <i>@Html.DisplayFor(modelItem => item.Description) </i> </p>
+                @if (signInManager.IsSignedIn(User) && ((item.Author == User.Identity.Name) || (User.IsInRole("Admin"))))
+                {
+                    <a asp-action="Edit" asp-controller="Review" asp-route-id="@item.ReviewId" class="btn btn-outline-warning">Edit review</a>
+                    <a asp-action="Delete" , asp-controller="Review" asp-route-id="@item.ReviewId" class="btn btn-outline-danger">Delete review</a>
+                }
+                <hr />
+            </div>
+        }
+    </div>
+</div>
+<div>
+    <a class="btn btn-dark" asp-action="Index"><i class="fas fa-angle-left"></i> Back to list of movies</a>
+    @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+    {
+        <a class="btn btn-outline-dark" asp-action="Edit" asp-route-id="@Model.MovieId">Edit</a>
+    }
+    </div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(function () {
+            $('#addReview').popover({
+                html: true,
+                content: function () {
+                    var content = $(this).attr("data-popover-content");
+                    return $(content).find(".popover-body").clone();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="popover"]').popover({
+                html: true,
+                content: function () {
+                    var classnamebtn = $(this).attr('class').replace(" btn btn-outline-warning btn-sm", "");
+                    var gradesdiv = "div." + classnamebtn;
+                    return $(gradesdiv).html();
+                }
+            });
+        });
+    </script>
+}
+
