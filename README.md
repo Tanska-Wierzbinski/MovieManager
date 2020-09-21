@@ -1,5 +1,7 @@
 # MovieManager
 
+## Now we are working on refactoring of the project in this [repository](https://github.com/Tanska-Wierzbinski/MovieManager_refactored). 
+
 This is our first project where we learned the basics of developing an application in ASP .NET Core.
 This app is modeled on a popular website about movies and actors. 
 Home page displays upcoming premieres and top rated movies. 
